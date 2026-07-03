@@ -13,15 +13,16 @@ interface BookLog {
 
 export default function Bookshelf() {
     const [books, setBooks] = useState<BookLog[]>([]);
+    const [sort, setSort] = useState("-created_at");
     const { token, username, logout } = useAuth();
 
     useEffect(() => {
-        fetch("/api/books/", {
+        fetch(`/api/books/?ordering=${sort}`, {
             headers: { Authorization: `Token ${token}` },
         })
             .then((res) => res.json())
             .then(setBooks);
-    }, [token]);
+    }, [token, sort]);
 
     return (
         <>
@@ -30,6 +31,14 @@ export default function Bookshelf() {
             </p>
             <h1>My Bookshelf</h1>
             <Link to="/books/new">Add New Log</Link>
+            <div>
+                Sort:{" "}
+                <button onClick={() => setSort("-created_at")}>Newest</button>
+                <button onClick={() => setSort("created_at")}>Oldest</button>
+                <button onClick={() => setSort("title")}>Title A-Z</button>
+                <button onClick={() => setSort("-rating")}>Rating (Highest)</button>
+                <button onClick={() => setSort("rating")}>Rating (Lowest)</button>
+            </div>
             {books.map((book) => (
                 <div key={book.id}>
                     <Link to={`/books/${book.id}`}>
