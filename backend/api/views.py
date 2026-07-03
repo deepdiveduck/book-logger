@@ -1,9 +1,11 @@
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from .serializers import RegisterSerializer
+from rest_framework import viewsets
+from .serializers import BookLogSerializer, RegisterSerializer
+from .models import BookLog
 
 
 @api_view(["GET"])
@@ -33,3 +35,14 @@ class LoginView(ObtainAuthToken):
     
 
 login_view = LoginView.as_view()
+
+
+class BookLogViewSet(viewsets.ModelViewSet):
+    serializer_class = BookLogSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return BookLog.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

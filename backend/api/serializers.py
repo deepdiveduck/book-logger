@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from .models import BookLog
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -15,3 +16,10 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data["password"],
         )
         return user
+    
+
+class BookLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookLog
+        fields = "__all__"
+        read_only_fields = ["id", "user", "created_at"]
