@@ -14,15 +14,18 @@ interface BookLog {
 export default function Bookshelf() {
     const [books, setBooks] = useState<BookLog[]>([]);
     const [sort, setSort] = useState("-created_at");
+    const [search, setSearch] = useState("");
     const { token, username, logout } = useAuth();
 
     useEffect(() => {
-        fetch(`/api/books/?ordering=${sort}`, {
+        const params = new URLSearchParams({ ordering: sort });
+        if (search) params.set("search", search);
+        fetch(`/api/books/?${params}`, {
             headers: { Authorization: `Token ${token}` },
         })
             .then((res) => res.json())
             .then(setBooks);
-    }, [token, sort]);
+    }, [token, sort, search]);
 
     return (
         <>
@@ -31,6 +34,13 @@ export default function Bookshelf() {
             </p>
             <h1>My Bookshelf</h1>
             <Link to="/books/new">Add New Log</Link>
+            <div>
+                <input
+                    placeholder="Search..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+            </div>
             <div>
                 Sort:{" "}
                 <button onClick={() => setSort("-created_at")}>Newest</button>

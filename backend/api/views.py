@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import viewsets
-from rest_framework.filters import OrderingFilter
+from rest_framework.filters import OrderingFilter, SearchFilter
 from .serializers import BookLogSerializer, RegisterSerializer
 from .models import BookLog
 
@@ -41,8 +41,9 @@ login_view = LoginView.as_view()
 class BookLogViewSet(viewsets.ModelViewSet):
     serializer_class = BookLogSerializer
     permission_classes = [IsAuthenticated]
-    filter_backends = [OrderingFilter]
+    filter_backends = [OrderingFilter, SearchFilter]
     ordering_fields = ["title", "author", "rating", "date_read", "created_at"]
+    search_fields = ["title", "author", "notes"]
     ordering = ["-created_at"]
 
     def get_queryset(self):
