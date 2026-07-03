@@ -35,6 +35,7 @@ export default function BookDetail() {
             {book.rating && <p>Rating: {book.rating}/5</p>}
             {book.date_read && <p>Read: {book.date_read}</p>}
             <p>{book.notes}</p>
+            <Link to={`/books/${book.id}/edit`}>Edit</Link>
         </>
     );
 }

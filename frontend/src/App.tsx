@@ -29,6 +29,10 @@ function App() {
                     element={token ? <BookForm /> : <Navigate to="/login" />}
                 />
                 <Route
+                    path="/books/:id/edit"
+                    element={token ? <BookForm /> : <Navigate to="/login" />}
+                />
+                <Route
                     path="/books/:id"
                     element={token ? <BookDetail /> : <Navigate to="/login" />}
                 />

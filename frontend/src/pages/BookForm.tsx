@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../auth/useAuth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function BookForm() {
+    const { id } = useParams();
+    const isEdit = Boolean(id);
     const [title, setTitle] = useState("");
     const [author, setAuthor] = useState("");
     const [notes, setNotes] = useState("");
@@ -11,14 +13,30 @@ export default function BookForm() {
     const { token } = useAuth();
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if (!id) return;
+        fetch(`/api/books/${id}/`, {
+            headers: { Authorization: `Token ${token}` },
+        })
+            .then((res) => res.json())
+            .then((book) => {
+                setTitle(book.title);
+                setAuthor(book.author);
+                setNotes(book.notes);
+                setDateRead(book.date_read || "");
+                setRating(book.rating ? String(book.rating) : "");
+            });
+    }, [id, token]);
+
     const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
         const body: Record<string, unknown> = { title, author, notes };
         if (date_read) body.date_read = date_read;
         if (rating) body.rating = parseInt(rating);
 
-        const res = await fetch("/api/books/", {
-            method: "POST",
+        const url = isEdit ? `/api/books/${id}/` : "/api/books/";
+        const res = await fetch(url, {
+            method: isEdit ? "PUT" : "POST",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Token ${token}`,
@@ -30,7 +48,8 @@ export default function BookForm() {
 
     return (
         <form onSubmit={handleSubmit}>
-            <h1>New Log</h1>
+            <button type="button" onClick={() => navigate(-1)}>← Back</button>
+            <h1>{isEdit ? "Edit Log" : "New Log"}</h1>
             <input
                 placeholder="Title"
                 value={title}
