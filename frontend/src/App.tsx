@@ -2,17 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./auth/useAuth";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-
-function Home() {
-    const { username, logout } = useAuth();
-    return (
-        <>
-            <h1>Book Logger</h1>
-            <p>Welcome, {username}!</p>
-            <button onClick={logout}>Logout</button>
-        </>
-    );
-}
+import Bookshelf from "./pages/Bookshelf";
+import BookDetail from "./pages/BookDetail";
+import BookForm from "./pages/BookForm";
 
 function App() {
     const { token } = useAuth();
@@ -29,8 +21,20 @@ function App() {
                     element={token ? <Navigate to="/" /> : <Register />}
                 />
                 <Route
-                    path="/*"
-                    element={token ? <Home /> : <Navigate to="/login" />}
+                    path="/"
+                    element={token ? <Bookshelf /> : <Navigate to="/login" />}
+                />
+                <Route
+                    path="/books/new"
+                    element={token ? <BookForm /> : <Navigate to="/login" />}
+                />
+                <Route
+                    path="/books/:id"
+                    element={token ? <BookDetail /> : <Navigate to="/login" />}
+                />
+                <Route
+                    path="*"
+                    element={<Navigate to="/" />}
                 />
             </Routes>
         </BrowserRouter>
