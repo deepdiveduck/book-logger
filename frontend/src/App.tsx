@@ -1,22 +1,39 @@
-import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./auth/useAuth";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
-function App() {
-    const [status, setStatus] = useState("");
-
-    useEffect(() => {
-        fetch("/api/health/")
-            .then((response) => response.json())
-            .then((data) => setStatus(data.status))
-            .catch((error) =>
-                console.error("Error fetching health check:", error),
-            );
-    }, []);
-
+function Home() {
+    const { username, logout } = useAuth();
     return (
         <>
-            <h1>Fullstack Starter</h1>
-            <p>Backend Status: {status || "Loading..."}</p>
+            <h1>Book Logger</h1>
+            <p>Welcome, {username}!</p>
+            <button onClick={logout}>Logout</button>
         </>
+    );
+}
+
+function App() {
+    const { token } = useAuth();
+
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route
+                    path="/login"
+                    element={token ? <Navigate to="/" /> : <Login />}
+                />
+                <Route
+                    path="/register"
+                    element={token ? <Navigate to="/" /> : <Register />}
+                />
+                <Route
+                    path="/*"
+                    element={token ? <Home /> : <Navigate to="/login" />}
+                />
+            </Routes>
+        </BrowserRouter>
     );
 }
 
