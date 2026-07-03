@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth/useAuth";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 
 interface BookLog {
     id: number;
@@ -15,7 +15,17 @@ interface BookLog {
 export default function BookDetail() {
     const { id } = useParams();
     const { token } = useAuth();
+    const navigate = useNavigate();
     const [book, setBook] = useState<BookLog | null>(null);
+
+    const handleDelete = async () => {
+        if (!confirm("Delete this log?")) return;
+        await fetch(`/api/books/${id}/`, {
+            method: "DELETE",
+            headers: { Authorization: `Token ${token}` },
+        });
+        navigate("/");
+    };
 
     useEffect(() => {
         fetch(`/api/books/${id}/`, {
@@ -36,6 +46,7 @@ export default function BookDetail() {
             {book.date_read && <p>Read: {book.date_read}</p>}
             <p>{book.notes}</p>
             <Link to={`/books/${book.id}/edit`}>Edit</Link>
+            <button onClick={handleDelete}>Delete</button>
         </>
     );
 }
